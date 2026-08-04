@@ -9,6 +9,7 @@ import com.library.rental_service.exception.ResourceNotFoundException;
 import com.library.rental_service.repository.RentalRepository;
 import com.library.rental_service.service.RentalService;
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
+    @CircuitBreaker(name = "USER-SERVICE", fallbackMethod = "userServiceFallback")
     public RentalResponse createRental(RentalRequest rentalRequest) {
         /*
         ===== using RestTemplate
@@ -124,5 +126,9 @@ public class RentalServiceImpl implements RentalService {
     public void deleteRental(Long id) {
         Rental rental = rentalRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
         rentalRepository.delete(rental);
+    }
+
+    public RentalResponse userServiceFallback(RentalRequest rentalRequest, Exception exception) {
+        throw new RuntimeException("User Service is temporarily unavailable.");
     }
 }

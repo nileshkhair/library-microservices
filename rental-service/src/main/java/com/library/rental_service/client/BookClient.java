@@ -1,12 +1,12 @@
 package com.library.rental_service.client;
 
+import com.library.rental_service.dto.BookResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "book-service", url = "http://localhost:8082")
+@FeignClient(name = "book-service")
 public interface BookClient {
-
     @GetMapping("/api/books/{id}")
-    Object getBookById(@PathVariable Long id);
+    BookResponse getBookById(@PathVariable Long id);
 }

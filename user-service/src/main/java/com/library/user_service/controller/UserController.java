@@ -31,23 +31,23 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponse getUserById(@PathVariable Long id) {
-        System.out.println("User service using port: "+port);
-       return  userService.getUserById(id);
+        System.out.println("User service using port: " + port);
+        return userService.getUserById(id);
     }
 
     @GetMapping
     public List<UserResponse> getAllUsers() {
-        return  userService.getAllUsers();
+        return userService.getAllUsers();
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable Long id,@Valid @RequestBody UserRequest userRequest) {
-        return userService.updateUser(id,userRequest);
+    public UserResponse updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
+        return userService.updateUser(id, userRequest);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id){
-      userService.deleteUser(id);
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 }
