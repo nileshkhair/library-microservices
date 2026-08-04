@@ -4,6 +4,7 @@ import com.library.user_service.dto.UserRequest;
 import com.library.user_service.dto.UserResponse;
 import com.library.user_service.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,9 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    @Value("${server.port}")
+    private String port;
+
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -27,6 +31,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponse getUserById(@PathVariable Long id) {
+        System.out.println("User service using port: "+port);
        return  userService.getUserById(id);
     }
 
