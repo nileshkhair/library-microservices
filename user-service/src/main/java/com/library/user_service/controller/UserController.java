@@ -4,6 +4,7 @@ import com.library.user_service.dto.UserRequest;
 import com.library.user_service.dto.UserResponse;
 import com.library.user_service.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/users")
 public class UserController {
 
@@ -31,7 +33,8 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponse getUserById(@PathVariable Long id) {
-        System.out.println("User service using port: " + port);
+        //System.out.println("User service using port: " + port);
+        log.info("User service using port: {}",port);
         return userService.getUserById(id);
     }
 
