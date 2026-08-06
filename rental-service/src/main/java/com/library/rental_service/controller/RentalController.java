@@ -25,6 +25,7 @@ public class RentalController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public RentalResponse createRental(@Valid @RequestBody RentalRequest rentalRequest) {
+        log.info("Rental service creating rental:");
         return rentalService.createRental(rentalRequest);
     }
 
