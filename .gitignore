@@ -4,6 +4,9 @@
 
 # Maven
 target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
 # Logs
 *.log
@@ -11,3 +14,5 @@ target/
 # OS files
 .DS_Store
 Thumbs.db
+
+library-config/
