@@ -6,6 +6,7 @@ import com.library.user_service.entity.User;
 import com.library.user_service.exception.ResourceNotFoundException;
 import com.library.user_service.repository.UserRepository;
 import com.library.user_service.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +16,11 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    // or Instead of writing use @RequiredArgsConstructor
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .name(userRequest.getName())
                 .email(userRequest.getEmail())
+                .password(passwordEncoder.encode(userRequest.getPassword()))
                 .build();
         User saveUser = userRepository.save(user);
         return UserResponse.builder()
