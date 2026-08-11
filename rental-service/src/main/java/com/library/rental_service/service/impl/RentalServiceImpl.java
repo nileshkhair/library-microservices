@@ -1,15 +1,12 @@
 package com.library.rental_service.service.impl;
 
-import com.library.rental_service.client.BookClient;
-import com.library.rental_service.client.UserClient;
 import com.library.rental_service.dto.RentalRequest;
 import com.library.rental_service.dto.RentalResponse;
 import com.library.rental_service.entity.Rental;
 import com.library.rental_service.exception.ResourceNotFoundException;
 import com.library.rental_service.repository.RentalRepository;
 import com.library.rental_service.service.RentalService;
-import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import com.library.rental_service.service.RentalValidationService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,19 +17,15 @@ import java.util.List;
 public class RentalServiceImpl implements RentalService {
 
     private final RentalRepository rentalRepository;
-    private final UserClient userClient;
-    private final BookClient bookClient;
+    private final RentalValidationService rentalValidationService;
     // private final RestTemplate restTemplate;
 
-
-    public RentalServiceImpl(RentalRepository rentalRepository, UserClient userClient, BookClient bookClient) {
+    public RentalServiceImpl(RentalRepository rentalRepository, RentalValidationService rentalValidationService) {
         this.rentalRepository = rentalRepository;
-        this.userClient = userClient;
-        this.bookClient = bookClient;
+        this.rentalValidationService = rentalValidationService;
     }
 
     @Override
-    @CircuitBreaker(name = "USER-SERVICE", fallbackMethod = "userServiceFallback")
     public RentalResponse createRental(RentalRequest rentalRequest) {
         /*
         ===== using RestTemplate
@@ -55,16 +48,9 @@ public class RentalServiceImpl implements RentalService {
         Refactored to OpenFeign
         OpenFeign provides a cleaner, interface-based way to call other microservices.
         */
-        try {
-            userClient.getUserById(rentalRequest.getUserId());
-        } catch (FeignException.NotFound e) {
-            throw new ResourceNotFoundException("User not found");
-        }
-        try {
-            bookClient.getBookById(rentalRequest.getBookId());
-        } catch (FeignException.NotFound e) {
-            throw new ResourceNotFoundException("Book not found");
-        }
+
+        rentalValidationService.validateUser(rentalRequest.getUserId());
+        rentalValidationService.validateBook(rentalRequest.getBookId());
 
         Rental rental = Rental.builder()
                 .userId(rentalRequest.getUserId())
@@ -126,9 +112,5 @@ public class RentalServiceImpl implements RentalService {
     public void deleteRental(Long id) {
         Rental rental = rentalRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
         rentalRepository.delete(rental);
-    }
-
-    public RentalResponse userServiceFallback(RentalRequest rentalRequest, Exception exception) {
-        throw new RuntimeException("User Service is temporarily unavailable.");
     }
 }
